@@ -13,10 +13,10 @@ const patrones = {
     boleta :/^\d{10}$/,
     fecha : /^(0[1-9])|[12]\d|3[01]\/(0[1-9]|1[1-2])\/\d{4}$/
 };
-cost mensajes = {
+const mensajes = {
     nombre : "Solo letras y rspacios, entre 2 y 60 catacteres.",
-    boleta :"Debe tener exactamente 10 digitos"
-    fechas: "Formaso esperrando : DD/MM/AAA(ej 01/01/2023)"
+    boleta :"Debe tener exactamente 10 digitos",
+    fecha : "Formato esperrando : DD/MM/AAA(ej 01/01/2023)"
 };
 function validarCampo(campo,valor){
     return patrones [campo].test()(valor.trim())
@@ -26,6 +26,7 @@ if (typeof document !== 'undefined') {
 
     formulario.addEventListener('submit', (evento) => {
         evento.preventDefault();
+        let formularioValido = true;
 
         //tenemos que validar campo por campo
         for(const campo of Object.keys(patrones)){
@@ -39,6 +40,17 @@ if (typeof document !== 'undefined') {
         }
 
         const mensajeExito = document.getElementById('mensaje-exito');
-        mensajeExito.textContent = formularioValido ? 'Registro exitoso!' : '';
+        const mensajeError = document.getElementById('mensaje-error');
+        if (formularioValido) {
+            mensajeError.textContent = '';
+            mensajeError.classList.remove('registro-fallido');
+            mensajeExito.textContent = 'Registro exitoso!';
+            mensajeExito.classList.remove('registro-exitoso');
+        }else{
+            mensajeExito.textContent = '';
+            mensajeExito.classList.remove('registro-exitoso');
+            mensajeError.textContent = 'Registro fallido. Cheque sus datos ingresados';
+            mensajeError.classList.remove('registro-fallido');
+        }
     })
 }
