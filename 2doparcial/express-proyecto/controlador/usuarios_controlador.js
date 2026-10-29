@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const usuariosModelo = require('../modelo/usuarios');
-const { validarCorreo, validarBoleta, validarContrasena, validarRol } = require('../validaciones');
+const { validarNombre, validarCorreo, validarBoleta, validarContrasena, validarRol } = require('../validaciones');
 
 function esDuplicado(error) {
     return error.code === 'ER_DUP_ENTRY' || error.code === '23505';
@@ -36,6 +36,9 @@ async function crearUsuario(req, res) {
 
         if (!nombre || !correo || !contrasena || !boleta) {
             return res.status(400).json({ error: 'nombre, correo, contrasena y boleta son obligatorios' });
+        }
+        if (!validarNombre(nombre)) {
+            return res.status(400).json({ error: 'El nombre debe tener de 1 a 4 palabras y contener solo letras' });
         }
         if (!validarCorreo(correo)) {
             return res.status(400).json({ error: 'El correo no tiene un formato válido' });
@@ -75,8 +78,8 @@ async function actualizarUsuario(req, res) {
         if (nombre === undefined && correo === undefined && rol === undefined) {
             return res.status(400).json({ error: 'Envía al menos uno de: nombre, correo, rol' });
         }
-        if (nombre !== undefined && (typeof nombre !== 'string' || !nombre.trim())) {
-            return res.status(400).json({ error: 'El nombre no puede estar vacío' });
+        if (nombre !== undefined && !validarNombre(nombre)) {
+            return res.status(400).json({ error: 'El nombre debe tener de 1 a 4 palabras y contener solo letras' });
         }
         if (correo !== undefined && !validarCorreo(correo)) {
             return res.status(400).json({ error: 'El correo no tiene un formato válido' });

@@ -1,4 +1,9 @@
-// Funciones que validan correo, boleta y contraseña (se usan en el controlador de usuarios).
+// Funciones que validan nombre, correo, boleta y contraseña (se usan en el controlador de usuarios).
+
+function validarNombre(nombre) {
+    if (typeof nombre !== 'string') return false;
+    return /^\p{L}+(?: +\p{L}+){0,3}$/u.test(nombre.trim());
+}
 
 function validarCorreo(correo) {
     if (typeof correo !== 'string') return false;
@@ -24,4 +29,4 @@ function validarRol(rol) {
     return ROLES.includes(rol);
 }
 
-module.exports = { validarCorreo, validarBoleta, validarContrasena, validarRol, ROLES };
+module.exports = { validarNombre, validarCorreo, validarBoleta, validarContrasena, validarRol, ROLES };
