@@ -1,0 +1,16 @@
+{
+  "name": "mini-proyecto-next",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "next dev",
+    "dev": "next dev",
+    "build": "next build",
+    "produccion": "next start"
+  },
+  "dependencies": {
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  }
+}

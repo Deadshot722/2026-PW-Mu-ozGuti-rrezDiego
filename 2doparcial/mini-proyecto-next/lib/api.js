@@ -1,0 +1,31 @@
+// Con el proxy de next.config.js se pide /api/... al mismo servidor de Next (puerto 3000).
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const BACKEND_CAIDO = 'El backend no responde. Revisa que esté encendido (npm start en la carpeta express-proyecto).';
+
+// Una sola función para hablar con el backend: revisa res.ok y lanza el error que mande el backend.
+export async function pedirJSON(ruta, opciones = {}) {
+  let res;
+  try {
+    res = await fetch(`${API_URL}/api${ruta}`, {
+      ...opciones,
+      headers: { 'Content-Type': 'application/json', ...opciones.headers },
+    });
+  } catch {
+    // Sin proxy (NEXT_PUBLIC_API_URL) y con el backend apagado, fetch falla antes de recibir respuesta.
+    throw new Error(BACKEND_CAIDO);
+  }
+
+  // Un 204 no trae cuerpo, y con el backend apagado el proxy de Next responde 500 en texto, no en JSON.
+  let datos = null;
+  try {
+    datos = await res.json();
+  } catch {
+    datos = null;
+  }
+
+  if (!res.ok) {
+    if (datos && datos.error) throw new Error(datos.error);
+    throw new Error(res.status === 500 ? BACKEND_CAIDO : `El backend respondió ${res.status}`);
+  }
+  return datos;
+}
