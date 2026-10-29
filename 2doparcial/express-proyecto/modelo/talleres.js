@@ -44,11 +44,25 @@ async function listarPorBoleta(boleta) {
     return filas;
 }
 
-// Inscribe a un alumno en un taller, ahora SÍ revisando que el taller exista, que no esté lleno
-// y que la boleta no esté ya inscrita. Lanza un error con .codigo para que el controlador responda.
+// Compara nombres sin importar mayúsculas, acentos ni espacios de más.
+function normalizar(texto) {
+    return String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+// Inscribe a un alumno en un taller, revisando que el taller exista, que el usuario exista,
+// que el nombre coincida, que no esté lleno y que la boleta no esté ya inscrita. Lanza un error con .codigo para que el controlador responda.
 async function registrarseEnUnTaller(tallerId, { nombre_alumno, boleta }) {
     const taller = await obtenerPorId(tallerId);
     if (!taller) throw Object.assign(new Error('Taller no encontrado'), { codigo: 'TALLER_NO_EXISTE' });
+
+    // El alumno debe existir en la tabla usuarios y el nombre debe ser el registrado para esa boleta.
+    const [usuarios] = await pool.query('SELECT nombre FROM usuarios WHERE boleta = ?', [boleta]);
+    if (usuarios.length === 0) {
+        throw Object.assign(new Error('No existe un usuario registrado con esa boleta'), { codigo: 'USUARIO_NO_EXISTE' });
+    }
+    if (normalizar(usuarios[0].nombre) !== normalizar(nombre_alumno)) {
+        throw Object.assign(new Error('El nombre no coincide con el registrado para esa boleta'), { codigo: 'NOMBRE_NO_COINCIDE' });
+    }
 
     const [repetida] = await pool.query(
         'SELECT id FROM asistencias WHERE taller_id = ? AND boleta = ?',
@@ -60,7 +74,7 @@ async function registrarseEnUnTaller(tallerId, { nombre_alumno, boleta }) {
     if (taller.asistentes >= taller.cupo) {
         throw Object.assign(new Error('El taller ya no tiene lugares'), { codigo: 'TALLER_LLENO' });
     }
-    return require('./asistencias').registrar({ taller_id: tallerId, nombre_alumno, boleta });
+    return require('./asistencias').registrar({ taller_id: tallerId, nombre_alumno: usuarios[0].nombre, boleta });
 }
 
 module.exports = {

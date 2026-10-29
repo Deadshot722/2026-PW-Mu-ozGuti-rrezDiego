@@ -67,8 +67,8 @@ async function obtenerTalleresDeBoleta(req, res) {
 }
 
 // POST /api/talleres/:id/registrarse  { nombre_alumno, boleta }
-// A diferencia de POST /api/asistencias, esta ruta SÍ responde 404 (taller inexistente)
-// y 409 (taller lleno o boleta ya inscrita).
+// A diferencia de POST /api/asistencias, esta ruta SÍ responde 404 (taller o usuario inexistente),
+// 400 (nombre distinto al registrado) y 409 (taller lleno o boleta ya inscrita).
 async function registrarseEnUnTaller(req, res) {
     try {
         const { nombre_alumno, boleta } = req.body || {};
@@ -84,7 +84,10 @@ async function registrarseEnUnTaller(req, res) {
         });
         res.status(201).json(registro);
     } catch (error) {
-        if (error.codigo === 'TALLER_NO_EXISTE') return res.status(404).json({ error: error.message });
+        if (error.codigo === 'TALLER_NO_EXISTE' || error.codigo === 'USUARIO_NO_EXISTE') {
+            return res.status(404).json({ error: error.message });
+        }
+        if (error.codigo === 'NOMBRE_NO_COINCIDE') return res.status(400).json({ error: error.message });
         if (error.codigo === 'YA_REGISTRADO' || error.codigo === 'TALLER_LLENO') {
             return res.status(409).json({ error: error.message });
         }

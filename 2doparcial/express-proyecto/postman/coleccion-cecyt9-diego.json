@@ -1094,14 +1094,14 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/talleres/alumno?boleta=2026090099",
+              "raw": "{{baseUrl}}/api/talleres/alumno?boleta=2026090001",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "talleres",
-                "alumno?boleta=2026090099"
+                "alumno?boleta=2026090001"
               ]
             }
           }
@@ -1123,14 +1123,14 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/alumnos/2026090099/talleres",
+              "raw": "{{baseUrl}}/api/alumnos/2026090001/talleres",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "alumnos",
-                "2026090099",
+                "2026090001",
                 "talleres"
               ]
             }
@@ -1171,7 +1171,95 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre_alumno\": \"Diego Muñoz Gutiérrez\",\n  \"boleta\": \"2026090099\"\n}",
+              "raw": "{\n  \"nombre_alumno\": \"Ana López\",\n  \"boleta\": \"2026090001\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Registrarse con boleta que no existe como usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/talleres/{{tallerId}}/registrarse",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "talleres",
+                "{{tallerId}}",
+                "registrarse"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre_alumno\": \"Fantasma\",\n  \"boleta\": \"2026090050\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Registrarse con nombre distinto al registrado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/talleres/{{tallerId}}/registrarse",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "talleres",
+                "{{tallerId}}",
+                "registrarse"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre_alumno\": \"Otro Nombre\",\n  \"boleta\": \"2026090001\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1215,7 +1303,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre_alumno\": \"Diego Muñoz Gutiérrez\",\n  \"boleta\": \"2026090099\"\n}",
+              "raw": "{\n  \"nombre_alumno\": \"Ana López\",\n  \"boleta\": \"2026090001\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
